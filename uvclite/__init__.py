@@ -25,6 +25,10 @@ from .standard_control_units import standard_ctrl_units
 if sys.version[0] == 2:
     from builtins import range
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 __author__ = 'Eric Callahan'
 
@@ -166,7 +170,7 @@ class UVCDevice(object):
 
     def print_controls(self):
         for c in self.controls.values():
-            print(c)
+            logger.info(c)
 
     def set_control_defaults(self):
         """
@@ -187,7 +191,7 @@ class UVCDevice(object):
             # print("SET {} SUCCESSFULLY".format(ctrl_name))
         except Exception as e:
             # print("SET {} FAILED".format(ctrl_name))
-            print(e)
+            logger.exception(e)
             ret = False
         return ret
 
