@@ -200,6 +200,41 @@ class UVCDevice(object):
         control = self.controls[ctrl_name]
         return control.value
 
+    def uvc_iter_frames_for_format(self, format_desc):
+        p_frame_desc = format_desc.frame_descs
+        while p_frame_desc:
+            yield p_frame_desc.contents
+            p_frame_desc = p_frame_desc.contents.next
+
+    def uvc_iter_formats(self, p_format_desc):
+        while p_format_desc:
+            yield p_format_desc.contents
+            p_format_desc = p_format_desc.contents.next
+
+    def create_fromat_descs(self, p_format_desc):
+        formats = []
+        for format_desc in self.uvc_iter_formats(p_format_desc):
+            format = bytearray(format_desc.guidFormat[0:4]).decode("utf-8")
+            frame_format = libuvc.get_frame_format_from_guid(format)
+            logger.debug("{0}".format(frame_format))
+            for frame_desc in self.uvc_iter_frames_for_format(format_desc):
+                width = frame_desc.wWidth
+                height = frame_desc.wHeight
+                frame_rate = int(1e7 / frame_desc.dwDefaultFrameInterval)
+                sub_type = libuvc.uvc_vs_des_subtype(frame_desc.bDescriptorSubtype).name
+                formats.append({
+                    "frame_format": frame_format,
+                    "width": width,
+                    "height": height,
+                    "frame_rate": frame_rate
+                })
+                logger.debug("  frame {0}x{1} @ {2}fps desc {3}".format(width, height, frame_rate, sub_type))
+        return formats
+
+    def get_format_descs(self):
+        p_format_desc = libuvc.uvc_get_format_descs(self._handle_p)
+        return self.create_fromat_descs(p_format_desc)
+
     def close(self):
         """
         Closes the device and removes its reference.  A device
