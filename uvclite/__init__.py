@@ -232,8 +232,11 @@ class UVCDevice(object):
         return formats
 
     def get_format_descs(self):
-        p_format_desc = libuvc.uvc_get_format_descs(self._handle_p)
-        return self.create_fromat_descs(p_format_desc)
+        if self._is_open:
+            p_format_desc = libuvc.uvc_get_format_descs(self._handle_p)
+            return self.create_fromat_descs(p_format_desc)
+        else:
+            logger.error("Device needs to be open to get format descriptors")
 
     def close(self):
         """
