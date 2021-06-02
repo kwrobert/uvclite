@@ -153,6 +153,20 @@ libuvc_errno_map = {
     uvc_error.UVC_ERROR_OTHER:None
 }
 
+def get_frame_format_from_guid(guid):
+    if guid == 'YUY2':
+        return uvc_frame_format.UVC_FRAME_FORMAT_YUYV
+    elif guid == 'UYVY':
+        return uvc_frame_format.UVC_FRAME_FORMAT_YUYV
+    elif guid =='Y800':
+        return uvc_frame_format.UVC_FRAME_FORMAT_GRAY8
+    elif guid == 'BY8':
+        return uvc_frame_format.UVC_FRAME_FORMAT_BY8
+    elif guid == 'MJPG':
+        return uvc_frame_format.UVC_FRAME_FORMAT_MJPEG
+    else:
+        return uvc_frame_format.UVC_FRAME_FORMAT_UNKNOWN
+
 # enum uvc_frame_format
 class uvc_frame_format(Enum):
     UVC_FRAME_FORMAT_UNKNOWN = 0
